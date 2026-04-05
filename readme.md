@@ -1,4 +1,8 @@
-## Diagramme des Cas d'Utilisation
+# Gestion Hôtelière - Diagrammes UML
+
+---
+
+## 1. Diagramme des Cas d'Utilisation
 
 ```mermaid
 flowchart TD
@@ -30,145 +34,159 @@ flowchart TD
     Receptionniste --> UC9
 
     Administrateur --> UC1
+```
 
-    
+---
 
-## Diagramme de Classes
+## 2. Diagramme de Classes
 
 ```mermaid
 classDiagram
-    class Hotel {
-        -int id
-        -string nom
-        -int nbEtoiles
-        -string adresse
-        +modifierCaracteristiques()
-        +consulterDisponibilites()
-    }
 
-    class Chambre {
-        -int numero
-        -int capacite
-        -float prixBase
-        -boolean estLibre
-        +calculerPrix(int personnes)
-        +reserver()
-        +liberer()
-    }
+class Hotel {
+    id : int
+    nom : string
+    nbEtoiles : int
+    adresse : string
+    +modifierCaracteristiques()
+    +consulterDisponibilites()
+}
 
-    class CategorieChambre {
-        -int id
-        -string description
-        -string degreConfort
-        -float prixParNuit
-    }
+class ClasseHotel {
+    niveau : int
+}
 
-    class Client {
-        -int codeClient
-        -string nom
-        -string email
-        -string telephone
-        +fournirInfos()
-    }
+class Chambre {
+    numero : int
+    capacite : int
+    prixBase : float
+    estLibre : boolean
+    +calculerPrix(nbPersonnes)
+    +reserver()
+    +liberer()
+}
 
-    class Reservation {
-        -int numeroResa
-        -date dateReservation
-        -date dateDebut
-        -date dateFin
-        -float montantTotal
-        +calculerMontant()
-    }
+class CategorieChambre {
+    id : int
+    description : string
+    degreConfort : string
+    prixParNuit : float
+}
 
-    class Facture {
-        -int numeroFacture
-        -float totalPrestations
-        -float totalSejour
-        -float montantTotal
-        +editerFacture()
-    }
+class Client {
+    codeClient : int
+    nom : string
+    email : string
+    telephone : string
+    +fournirInfos()
+}
 
-    class Prestation {
-        -int id
-        -string libelle
-        -date date
-        -float prix
-    }
+class Reservation {
+    numeroResa : int
+    dateReservation : date
+    dateDebut : date
+    dateFin : date
+    montantTotal : float
+    +calculerMontant()
+}
 
-    %% Relations (Cardinalités)
-    Hotel "1" -- "1..*" CategorieChambre : possède
-    CategorieChambre "1" -- "1..*" Chambre : classifie
-    Chambre "1" -- "0..1" Reservation : concerne
-    Client "1" -- "0..*" Reservation : effectue
-    Reservation "1" -- "0..1" Facture : genere
-    Reservation "1" -- "1..*" Prestation : contient
-    Hotel "1" -- "*" Prestation : propose
+class Paiement {
+    montant : float
+    date : date
+    type : string
+}
 
-    
+class Facture {
+    numeroFacture : int
+    totalPrestations : float
+    totalSejour : float
+    montantTotal : float
+    +editerFacture()
+}
 
+class Prestation {
+    id : int
+    libelle : string
+    date : date
+    prix : float
+}
 
-## Diagramme d'Activité du Processus de Réservation
+Hotel --> ClasseHotel : 1 - 1
+Hotel --> CategorieChambre : 1 - 1..
+CategorieChambre --> Chambre : 1 - 1..
+Client --> Reservation : 1 - 0..
+Reservation --> Chambre : 1 - 1
+Reservation --> Paiement : 1 - 0..1
+Reservation --> Facture : 1 - 0..1
+Facture --> Prestation : 1 - 0..*
+Hotel --> Prestation : 1 - 0..*
+```
+
+---
+
+## 3. Diagramme d’Activité
 
 ```mermaid
 flowchart TD
-    Start([Début]) --> ChooseMethod{Choix du canal}
-    
-    %% Swith entre les deux méthodes
-    ChooseMethod -->|Internet| FillForm[Client remplit formulaire web]
-    ChooseMethod -->|Agence| FillPaper[Client remplit imprimé papier]
-    
-    %% Fusion des deux flux après saisie
-    FillForm --> EnterData[Saisie des infos: <br/>Nom, Dates, Classe, Catégorie]
-    FillPaper --> EnterData
-    
-    %% Vérification dispo
-    EnterData --> CheckDispo{Demande soluble ?}
-    CheckDispo -->|Non| NotifyFail[Notifier client indisponibilité]
-    NotifyFail --> End([Fin])
-    
-    %% Si dispo
-    CheckDispo -->|Oui| CreateResa[Créer réservation <br/>avec numéro unique]
-    CreateResa --> CheckDelay{Délai > 8 jours ?}
-    
-    %% Gestion des arrhes
-    CheckDelay -->|Non| ConfirmDirect[Réservation confirmée immédiate]
-    CheckDelay -->|Oui| RequestArhes[Demander arrhes >= 10%]
-    RequestArhes --> PayArhes[Client paie les arrhes]
-    PayArhes --> ConfirmDirect
-    
-    %% Fin
-    ConfirmDirect --> Save[Enregistrer réservation]
-    Save --> End
+    Start([Début]) --> Choix{Choix du canal}
 
-    
-## Diagramme de Séquence 
+    Choix -->|Internet| FormWeb[Remplir formulaire web]
+    Choix -->|Agence| FormPapier[Remplir formulaire papier]
+
+    FormWeb --> Saisie
+    FormPapier --> Saisie
+
+    Saisie --> Dispo[Entrer infos client et séjour]
+
+    Dispo -->|Non| Refus[Refuser réservation]
+    Refus --> End([Fin])
+
+    Dispo -->|Oui| Creation[Créer réservation]
+
+    Creation --> Delai["Demander arrhes (>=10%)"]
+
+    Delai -->|Oui| Arrhes[Client paie]
+    Arrhes --> Paiement[Confirmation immédiate]
+
+    Delai -->|Non| Confirmation[Enregistrer réservation]
+
+    Paiement --> Confirmation
+    Confirmation --> Enregistrement[s12]
+    Enregistrement --> End
+```
+
+---
+
+## 4. Diagramme de Séquence
 
 ```mermaid
 sequenceDiagram
     participant Client
-    participant InterfaceWeb as Interface Web
-    participant Systeme as Système de Gestion
-    participant DB as Base de Données
+    participant Interface
+    participant Systeme
+    participant DB
 
-    Client->>InterfaceWeb: Remplir formulaire (dates, catégorie)
-    InterfaceWeb->>Systeme: Soumettre demande disponibilité
-    Systeme->>DB: Vérifier chambres libres
-    DB-->>Systeme: Retourne liste chambres dispo
-    Systeme-->>InterfaceWeb: Affiche choix disponibles
-    InterfaceWeb-->>Client: Propose chambre
-    
-    Client->>InterfaceWeb: Confirme la réservation
-    InterfaceWeb->>Systeme: Envoie confirmation
-    
-    alt Si délai > 8 jours
-        Systeme->>Systeme: Calculer arrhes (10%)
-        Systeme-->>Client: Demande paiement arrhes
-        Client-->>Systeme: Fournit paiement
-    else Si délai <= 8 jours
-        Systeme->>Systeme: Réservation immédiate
+    Client->>Interface: Saisir demande
+    Interface->>Systeme: Transmettre
+
+    Systeme->>DB: Vérifier disponibilité
+    DB-->>Systeme: Résultat
+
+    Systeme-->>Interface: Propositions
+    Interface-->>Client: Affichage
+
+    Client->>Interface: Confirme
+    Interface->>Systeme: Confirmation
+
+    alt Délai > 8 jours
+        Systeme->>Client: Demande arrhes
+        Client->>Systeme: Paiement
+    else Délai <= 8 jours
+        Systeme->>Systeme: Validation directe
     end
-    
-    Systeme->>DB: Enregistrer la réservation
-    DB-->>Systeme: Confirmation enregistrement
-    Systeme-->>Client: Envoie numéro de réservation
 
+    Systeme->>DB: Enregistrer
+    DB-->>Systeme: OK
+
+    Systeme-->>Client: Numéro réservation
+```
