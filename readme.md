@@ -2,16 +2,16 @@
 
 ```mermaid
 flowchart TD
-    subgraph Systeme
-        UC1
-        UC2
-        UC3
-        UC4
-        UC5
-        UC6
-        UC7
-        UC8
-        UC9
+    subgraph Systeme[Logiciel de Gestion Hôtelière]
+        UC1[Maintenir parc hôtelier]
+        UC2[Consulter disponibilités]
+        UC3[Effectuer réservation]
+        UC4[Enregistrer arrhes]
+        UC5[Enregistrer arrivée client]
+        UC6[Enregistrer consommations]
+        UC7[Établir facture]
+        UC8[Éditer liste arrivées]
+        UC9[Éditer état occupation]
     end
 
     Client((Client))
