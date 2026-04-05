@@ -1,38 +1,35 @@
 ## Diagramme des Cas d'Utilisation
 
 ```mermaid
-graph TD
-    subgraph Logiciel_Gestion_Hoteliere
-        title[Logiciel de Gestion Hôtelière]
-        
-        %% Cas d'utilisation
-        uc1[Maintenir Parc Hôtelier]
-        uc2[Consulter Disponibilités]
-        uc3[Effectuer Réservation]
-        uc4[Enregistrer Arrhes]
-        uc5[Enregistrer Arrivée Client]
-        uc6[Enregistrer Consommations]
-        uc7[Établir Facture]
-        uc8[Éditer Liste Arrivées]
-        uc9[Éditer État Occupation]
+flowchart TD
+    subgraph Systeme[Logiciel de Gestion Hôtelière]
+        UC1[Maintenir parc hôtelier]
+        UC2[Consulter disponibilités]
+        UC3[Effectuer réservation]
+        UC4[Enregistrer arrhes]
+        UC5[Enregistrer arrivée client]
+        UC6[Enregistrer consommations]
+        UC7[Établir facture]
+        UC8[Éditer liste arrivées]
+        UC9[Éditer état occupation]
     end
 
-    %% Acteurs
-    act_client((Client))
-    act_reception((Réceptionniste))
-    act_admin((Administrateur))
+    Client((Client))
+    Receptionniste((Réceptionniste))
+    Administrateur((Administrateur))
 
-    %% Associations
-    act_client --> uc3
-    act_client --> uc4
-    act_reception --> uc2
-    act_reception --> uc3
-    act_reception --> uc5
-    act_reception --> uc6
-    act_reception --> uc7
-    act_reception --> uc8
-    act_reception --> uc9
-    act_admin --> uc1
+    Client --> UC3
+    Client --> UC4
+
+    Receptionniste --> UC2
+    Receptionniste --> UC3
+    Receptionniste --> UC5
+    Receptionniste --> UC6
+    Receptionniste --> UC7
+    Receptionniste --> UC8
+    Receptionniste --> UC9
+
+    Administrateur --> UC1
 
     
 
