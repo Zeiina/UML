@@ -19,6 +19,9 @@ style E fill:#ffcccc
 style F fill:#ffcccc
 style G fill:#ffcccc
 
+## État cible (Avant DevOps)
+
+
 graph TD
 A[Git push] --> B[Pipeline CI déclenché]
 B --> C[Tests unitaires + intégration]
